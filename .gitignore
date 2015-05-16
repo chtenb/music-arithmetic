@@ -1,3 +1,9 @@
+# Ignore vim files
+
+
+# Ignore exported midi files
+*.mid
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
