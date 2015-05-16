@@ -1,6 +1,8 @@
 # music-arithmetic
 Language for describing music compositions in exact frequencies
 
+[![Build Status](https://travis-ci.org/Chiel92/music-arithmetic.svg?branch=master)](https://travis-ci.org/Chiel92/music-arithmetic)
+
 ## Dependencies
 - python (developed and tested with python 3.4.0)
 - music21
