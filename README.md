@@ -38,12 +38,12 @@ extended with frequency constants and the operators
 The advantage of choosing this precedence order is that we can write multiple voices easily
 ```
 (
-    #c g a g f e d   c,
-    #c e f e d c g/2 c
+    c g a g f e d   c,
+    c e f e d c g/2 c
 )
 ```
 
-The disadvantage of choosing this precedence order is that writing chords requires parenthesis
+An equivalent way of writing this piece in a chord-by-chord fashion could be as follows.
 ```
 (
     c (e, g) (f, a) (e, g) (d, f) (c, e) (g/2, (d d) | .5) c
