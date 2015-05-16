@@ -1,5 +1,5 @@
 # Ignore vim files
-
+*.swp
 
 # Ignore exported midi files
 *.mid
