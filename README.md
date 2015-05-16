@@ -60,7 +60,7 @@ Here is a brief motivation why this syntax was chosen.
 If we swap the precedence order of `,` and ` `, the parts would look like this
 ```
 (
-   c g a g f e (d d) | 1/2 c,
+   (c g a g f e (d d) | 1/2 c),
    (c e f e d c g           c) / 2
 )
 (
@@ -70,17 +70,6 @@ If we swap the precedence order of `,` and ` `, the parts would look like this
 
 Although it requires less parenthesis, it is also less readable,
 because intuitively commas are seperators, more than spaces.
-
-If we swap the meaning of `,` and ` `, the parts would look like this
-```
-(
-    (c, g, a, g, f, e, (d, d) | 1/2, c),
-    (c, e, f, e, d, c, g,            c)
-)
-(
-    c, e g, f a, e g, f a, e g, g/2 (d, d) | 1/2, c
-)
-```
 
 In practice you would place parenthesis around chords and melodies anyway, to specify duration.
 So in the end it doesn't matter too much.
