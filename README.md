@@ -4,9 +4,9 @@ Language for describing music compositions in exact frequencies
 [![Build Status](https://travis-ci.org/Chiel92/music-arithmetic.svg?branch=master)](https://travis-ci.org/Chiel92/music-arithmetic)
 
 ## Dependencies
-- python (developed and tested with python 3.4.0)
-- music21
-- pyparsing
+- Python (developed and tested with python 3.4.0)
+- [Music21][music21]
+- [Pyparsing][pyparsing]
 
 ## Examples
 This is an example of music arithmetic code.
@@ -51,3 +51,6 @@ An equivalent way of writing this piece in a chord-by-chord fashion could be as 
     c (e, g) (f, a) (e, g) (d, f) (c, e) (g/2, (d d) | .5) c
 )
 ```
+
+[music21]: http://web.mit.edu/music21/doc/
+[pyparsing]: https://pypi.python.org/pypi/pyparsing/2.0.3
