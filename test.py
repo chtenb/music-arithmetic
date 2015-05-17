@@ -15,7 +15,10 @@ def export_example():
     m21_result = m21_result.chordify()
     m21_result = m21_result.makeNotation()
     m21_result.write('midi', 'output/foo.mid')
-    m21_result.write('lily.pdf', 'output/foo')
+    try:
+        m21_result.write('lily.pdf', 'output/foo')
+    except:
+        print('Lilypond is probably not installed, so result can not be exported to pdf')
 
 
 def test_exact_midi():

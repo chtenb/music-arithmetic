@@ -1,5 +1,5 @@
 # music-arithmetic
-Language for describing music compositions in exact frequencies
+Language for describing music compositions in exact frequencies.
 
 [![Build Status](https://travis-ci.org/Chiel92/music-arithmetic.svg?branch=master)](https://travis-ci.org/Chiel92/music-arithmetic)
 
@@ -41,7 +41,7 @@ extended with frequency constants and the operators:
 - ` ` (serial operator, precedence 2)
 - `,` (parallel operator, precedence 1)
 
-The advantage of choosing this precedence order is that we can write multiple voices easily
+The advantage of choosing this precedence order is that we can write multiple voices easily.
 ```
 (
     c g a g f e d   c,
@@ -58,7 +58,7 @@ An equivalent way of writing this piece in a chord-by-chord fashion could be as 
 
 
 Here is a brief motivation why this syntax was chosen.
-If we swap the precedence order of `,` and ` `, the parts would look like this
+If we swap the precedence order of `,` and ` `, the parts would look like this.
 ```
 (
    (c g a g f e (d d) | 1/2 c),
