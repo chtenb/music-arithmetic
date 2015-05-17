@@ -37,32 +37,25 @@ C0 = 16.35
 
 
 
-test = parse_file('example.ma')
-print(test)
-from to_music21 import construct_music21
-m21_result = construct_music21(test)
-for n in m21_result:
-    automatic = n.frequency
-    manual = C0 * pow(2, n.pitch.octave) * pow(2, (n.pitch.pitchClass)/12) * pow(2,
-            n.pitch.microtone.cents/1200)
-    print('Manual: {}'.format(manual))
-    print('Automatic: {}'.format(automatic))
-    automatic = n.pitch.ps
-    manual = 12 * (n.pitch.octave + 1) + n.pitch.pitchClass + n.pitch.microtone.cents/100
-    print('Manual: {}'.format(manual))
-    print('Automatic: {}'.format(automatic))
-    print()
+#for n in m21_result:
+    #automatic = n.frequency
+    #manual = C0 * pow(2, n.pitch.octave) * pow(2, (n.pitch.pitchClass)/12) * pow(2,
+            #n.pitch.microtone.cents/1200)
+    #print('Manual: {}'.format(manual))
+    #print('Automatic: {}'.format(automatic))
+    #automatic = n.pitch.ps
+    #manual = 12 * (n.pitch.octave + 1) + n.pitch.pitchClass + n.pitch.microtone.cents/100
+    #print('Manual: {}'.format(manual))
+    #print('Automatic: {}'.format(automatic))
+    #print()
 #exit()
-m21_result.show('text')
+#m21_result.show('text')
 #m21_result.show('midi')
 #m21_result.show('vexflow')
 #m21_result.show('lily.png')
 #m21_result.show('lily.png')
 #m21_result.show('lily')
 #m21_result.show('musicxml.png')
-m21_result.write('midi', 'output/foo.mid')
-call(['midi2ly', 'output/foo.mid', '-o', 'output/foo.ly'])
-call(['lilypond', '-o', 'output/foo', 'output/foo.ly'])
 
 #m21_result.write('lily.png', 'output/foo')
 

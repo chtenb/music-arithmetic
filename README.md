@@ -7,6 +7,7 @@ Language for describing music compositions in exact frequencies
 - Python (developed and tested with python 3.4.0)
 - [Music21][music21]
 - [Pyparsing][pyparsing]
+- [Lilypond][lilypond] (for exporting to pdf)
 
 ## Examples
 This is an example of music arithmetic code.
@@ -34,8 +35,8 @@ A duration parameter can be specified after a `|` symbol, which has a low preced
 Parenthesis are not needed for tuples anymore, so they can replace curly brackets.
 
 So we have the rational numbers with the usual operators
+extended with frequency constants and the operators:
 - `*` and `/` (precedence 4)
-extended with frequency constants and the operators
 - `|` (duration operator, precedence 3)
 - ` ` (serial operator, precedence 2)
 - `,` (parallel operator, precedence 1)
@@ -76,3 +77,4 @@ So in the end it doesn't matter too much.
 
 [music21]: http://web.mit.edu/music21/doc/
 [pyparsing]: https://pypi.python.org/pypi/pyparsing/2.0.3
+[lilypond]: http://www.lilypond.org/

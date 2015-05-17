@@ -2,7 +2,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('inputfile', help='Filename of .ma file to be exported')
-parser.add_argument('outputfile', help='Filename of output midi file', nargs='?')
+parser.add_argument('outputfile', help='Filename of output pdf file', nargs='?')
 parser.add_argument('beautify', help='If specified, convert result to proper notation',
                     action='store_true')
 args = parser.parse_args()
@@ -20,6 +20,6 @@ if args.beautify:
     m21_result = m21_result.makeNotation()
 
 if not args.outputfile:
-    m21_result.write('midi')
+    m21_result.write('lily.pdf')
 else:
-    m21_result.write('midi', args.outputfile)
+    m21_result.write('lily.pdf', args.outputfile)
