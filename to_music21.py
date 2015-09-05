@@ -1,4 +1,4 @@
-from operations import Duration, Parallel, Serial, Multiplication, Division, Frequency
+from arithmetic import Duration, Parallel, Serial, Multiplication, Division, Pitch
 from music21 import stream, note, pitch
 from math import log, floor, pow
 
@@ -11,7 +11,7 @@ C0 = 16.35
 
 def construct_music21(maobject):
     """Export a music21 stream from the given maobject."""
-    if type(maobject) == Frequency:
+    if type(maobject) == Pitch:
         return frequency(maobject.token)
 
     if type(maobject) == Multiplication:
@@ -72,17 +72,28 @@ def frequency(freq):
 
 
 def multiplication(left, right):
-    left = construct_music21(left)
-    right = construct_music21(right)
-
-    if isinstance(left, note.Note):
-        result = transpose(right, left.pitch.frequency)
-        result = scale_duration(result, left.quarterLength)
-    elif isinstance(right, note.Note):
-        result = transpose(left, right.pitch.frequency)
-        result = scale_duration(result, right.quarterLength)
+    if isinstance(left, Parallel):
+        s = stream.Stream()
+        s.insert(0, multiplication(left.left, right))
+        s.insert(0, multiplication(left.right, right))
+        result = s.flat
+    elif isinstance(left, Serial):
+        s = stream.Stream()
+        s.append(multiplication(left.left, right))
+        s.append(multiplication(left.right, right))
+        result = s.flat
     else:
-        raise NotImplementedError('Multiplication of two non-frequencies has no meaning')
+        left = construct_music21(left)
+        right = construct_music21(right)
+
+        if isinstance(left, note.Note):
+            result = transpose(right, left.pitch.frequency)
+            result = scale_duration(result, left.quarterLength)
+        elif isinstance(right, note.Note):
+            result = transpose(left, right.pitch.frequency)
+            result = scale_duration(result, right.quarterLength)
+        else:
+            raise NotImplementedError('This should not happen')
 
     return result
 

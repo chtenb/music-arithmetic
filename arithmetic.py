@@ -3,7 +3,7 @@ This module contains building blocks for music arithmetic expressions.
 """
 
 
-class Frequency:
+class Pitch:
 
     def __init__(self, token):
         self.token = token
