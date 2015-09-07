@@ -1,4 +1,5 @@
-from arithmetic import Duration, Parallel, Serial, Multiplication, Division, Pitch
+# TODO: change this to use the composition representation as input
+from arithmetic import Duration, Parallel, Serial, Multiplication, Division, PitchLiteral
 from music21 import stream, note, pitch
 from math import log, floor, pow
 
@@ -11,7 +12,7 @@ C0 = 16.35
 
 def construct_music21(maobject):
     """Export a music21 stream from the given maobject."""
-    if type(maobject) == Pitch:
+    if type(maobject) == PitchLiteral:
         return frequency(maobject.token)
 
     if type(maobject) == Multiplication:
@@ -29,7 +30,7 @@ def construct_music21(maobject):
     if type(maobject) == Parallel:
         return parallel(*maobject)
 
-    raise ValueError('Given object not a music arithmetic object.')
+    raise ValueError('Given object {} not a music arithmetic object.'.format(maobject))
 
 
 def frequency(freq):

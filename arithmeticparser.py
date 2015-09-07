@@ -1,11 +1,11 @@
 import pyparsing as pp
-from operations import Parallel, Serial, Duration, Division, Multiplication, Frequency
+from arithmetic import Parallel, Serial, Duration, Division, Multiplication, PitchLiteral
 pp.ParserElement.enablePackrat()
 
 
 def frequency_action(s, l, t):
     t = t.asList()[0]
-    return [Frequency(t)]
+    return [PitchLiteral(t)]
 number = pp.Regex(r'\d*[.]?\d+')
 frequency_symbol = pp.Regex(r'[abcdefg_]\d?[#-]?')
 frequency = number ^ frequency_symbol

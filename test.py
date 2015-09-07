@@ -1,4 +1,4 @@
-from maparser import parse_file
+from arithmeticparser import parse_file
 from to_music21 import construct_music21
 
 from music21 import pitch, note, chord, stream
