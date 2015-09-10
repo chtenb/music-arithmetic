@@ -8,10 +8,14 @@ from copy import copy
 import math
 from abc import abstractmethod
 
+Infinity = float('inf')
+
 
 class Tone:
 
-    """Abstract atomic object of a composition"""
+    """
+    Abstract atomic object of a composition.
+    """
 
     def __init__(self, duration):
         self.duration = duration
@@ -22,20 +26,9 @@ class Tone:
         return result
 
     def concat(self, other):
-        if type(other) == Tone:
-            result = Piece()
-            result[0] = self
-            result[self.duration] = other
-            return result
-        elif type(other) == Piece:
-            result = copy(self)
-            for offset, tones in other.items():
-                result[self.duration + offset] = []
-                for tone in tones:
-                    result[self.duration + offset].append(copy(tone))
-            return result
-        else:
-            raise ValueError('Given object not a music arithmetic object.')
+        result = Piece()
+        result[0] = self
+        return result.concat(other)
 
     @abstractmethod
     def frequency(self, base_frequency=1):
@@ -49,25 +42,58 @@ class Tone:
         return abs(math.log(2, self.frequency()) - math.log(2, other.frequency()))
 
 
+class Rest(Tone):
+
+    """
+    Rests are encoded by a frequency of 0.
+    """
+
+    def __init__(self, duration=1):
+        Tone.__init__(self, duration)
+
+    def __repr(self):
+        return 'Rest({})'.format(self.duration)
+
+    def frequency(self, base_frequency=1):
+        return 0
+
+    def harmonic_distance(self, other):
+        return float('inf')
+
+
 class Symbol(Tone):
+
+    """
+    The usual symbols are allowed.
+    c2, cis3, bes4, etc.
+    """
 
     def __init__(self, symbol, duration=1):
         self.symbol = symbol
         Tone.__init__(self, duration)
 
+    def __repr(self):
+        return 'Symbol({}, {})'.format(self.symbol, self.duration)
+
     def frequency(self, base_frequency=1):
         return NotImplemented
 
     def harmonic_distance(self, other):
-        ...
-        return float('inf')
+        return Infinity
 
 
 class Frequency(Tone):
 
+    """
+    Rests can be encoded by a frequency of 0.
+    """
+
     def __init__(self, frequency, duration=1):
         self._frequency = frequency
         Tone.__init__(self, duration)
+
+    def __repr(self):
+        return 'Frequency({}, {})'.format(self.frequency, self.duration)
 
     def frequency(self, base_frequency=1):
         return base_frequency * self.frequency
@@ -79,8 +105,7 @@ class Frequency(Tone):
         return Frequency(self.frequency() / other.frequency())
 
     def harmonic_distance(self, other):
-        ...
-        return float('inf')
+        return Infinity
 
 
 class Vector(Tone):
@@ -96,6 +121,10 @@ class Vector(Tone):
 
     def __getitem__(self, i):
         return self.powers[i]
+
+    def __repr__(self):
+        return 'Vector({}, {})'.format(', '.join(str(p) for p in self.powers),
+                                       self.duration)
 
     def __str__(self):
         x, y, z = self
