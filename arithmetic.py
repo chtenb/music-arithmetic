@@ -2,6 +2,7 @@
 This module contains building blocks for music arithmetic expressions.
 """
 from composition import Frequency, Symbol, Vector, Tone, Rest, Piece
+from copy import deepcopy
 
 
 class PitchLiteral:
@@ -87,109 +88,40 @@ def to_composition(arith_expr):
         return subject.stretch(duration_factor)
 
     if type(arith_expr) == Serial:
-        left_subject = to_composition(arith_expr.left)
-        right_subject = to_composition(arith_expr.right)
-        ...
+        left_piece = to_composition(arith_expr.left)
+        right_piece = to_composition(arith_expr.right)
+        return left_piece.concat(right_piece)
 
     if type(arith_expr) == Parallel:
-        ...
+        left_piece = to_composition(arith_expr.left)
+        right_piece = to_composition(arith_expr.right)
+        result = deepcopy(left_piece)
+        for offset, tone in right_piece.items():
+            result[offset].append(deepcopy(tone))
+        return result
 
     if type(arith_expr) == Multiplication:
-        ...
+        left = to_composition(arith_expr.left)
+        right = to_composition(arith_expr.right)
+
+        if not isinstance(left, Tone):
+            raise NotImplementedError('Left-multiplication by non-tones has no meaning')
+
+        if isinstance(right, Tone):
+            ...
+
+        if isinstance(right, Piece):
+            ...
 
     if type(arith_expr) == Division:
-        ...
+        subject = to_composition(arith_expr.left)
+        divisor = to_composition(arith_expr.right)
 
-    raise ValueError('Given object not a music arithmetic object.')
+        if isinstance(divisor, Tone):
+            result = subject.transpose(1 / divisor.frequency)
+            result = result.stretch(1 / divisor.duration)
+            return result
 
-
-
-def multiplication(left, right):
-    if isinstance(left, Parallel):
-        s = stream.Stream()
-        s.insert(0, multiplication(left.left, right))
-        s.insert(0, multiplication(left.right, right))
-        result = s.flat
-    elif isinstance(left, Serial):
-        s = stream.Stream()
-        s.append(multiplication(left.left, right))
-        s.append(multiplication(left.right, right))
-        result = s.flat
-    else:
-        left = construct_music21(left)
-        right = construct_music21(right)
-
-        if isinstance(left, note.Note):
-            result = transpose(right, left.pitch.frequency)
-            result = scale_duration(result, left.quarterLength)
-        elif isinstance(right, note.Note):
-            result = transpose(left, right.pitch.frequency)
-            result = scale_duration(result, right.quarterLength)
-        else:
-            raise NotImplementedError('This should not happen')
-
-    return result
+        raise NotImplementedError('Division by non-tones has no meaning')
 
 
-def division(left, right):
-    left = construct_music21(left)
-    right = construct_music21(right)
-
-    if isinstance(right, note.Note):
-        result = transpose(left, 1 / right.pitch.frequency)
-        result = scale_duration(result, 1 / right.quarterLength)
-    else:
-        raise NotImplementedError('Division by non-frequencies has no meaning')
-
-    return result
-
-
-def duration(left, right):
-    subject = construct_music21(left)
-    adject = construct_music21(right)
-    scale = adject.pitch.frequency
-    return scale_duration(subject, scale)
-
-
-def serial(left, right):
-    s = stream.Stream()
-    for element in (left, right):
-        s.append(construct_music21(element))
-    return s.flat
-
-
-def parallel(left, right):
-    s = stream.Stream()
-    for element in (left, right):
-        s.insert(0, construct_music21(element))
-    return s.flat
-
-
-#
-# Helper functions
-#
-
-
-def transpose(subject, freq):
-    if isinstance(subject, note.Note):
-        n = note.Note()
-        n.duration = subject.duration
-        n.pitch.frequency = subject.pitch.frequency * freq
-        return n
-    else:
-        s = stream.Stream()
-        for element in subject:
-            s.insert(element.offset, transpose(element, freq))
-        return s.flat
-
-
-def scale_duration(subject, scale):
-    if isinstance(subject, note.Note):
-        return subject.augmentOrDiminish(scale, inPlace=False)
-    else:
-        subject = subject.scaleDurations(scale, inPlace=False)
-        return subject.scaleOffsets(scale, inPlace=False)
-
-
-def frequency_to_semitone(freq):
-    return int(round(12 * log(freq, 2)))

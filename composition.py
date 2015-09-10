@@ -4,14 +4,29 @@ intermediate representation for describing musical pieces.
 It is flexible enough to contain various types of tone representations, such as
 frequencies, symbols and vectors.
 """
-from copy import copy
+from copy import deepcopy
 import math
 from abc import abstractmethod
 
 Infinity = float('inf')
 
 
-class Tone:
+class Music:
+
+    """
+    Abstract music class.
+    """
+
+    @abstractmethod
+    def stretch(self, duration_factor):
+        pass
+
+    @abstractmethod
+    def transpose(self, pitch_factor):
+        pass
+
+
+class Tone(Music):
 
     """
     Abstract atomic object of a composition.
@@ -21,7 +36,7 @@ class Tone:
         self.duration = duration
 
     def stretch(self, duration_factor):
-        result = copy(self)
+        result = deepcopy(self)
         result.duration *= duration_factor
         return result
 
@@ -54,6 +69,9 @@ class Rest(Tone):
     def __repr(self):
         return 'Rest({})'.format(self.duration)
 
+    def transpose(self, pitch_factor):
+        return Rest(self.duration)
+
     def frequency(self, base_frequency=1):
         return 0
 
@@ -75,6 +93,9 @@ class Symbol(Tone):
     def __repr(self):
         return 'Symbol({}, {})'.format(self.symbol, self.duration)
 
+    def transpose(self, pitch_factor):
+        return NotImplemented
+
     def frequency(self, base_frequency=1):
         return NotImplemented
 
@@ -85,7 +106,7 @@ class Symbol(Tone):
 class Frequency(Tone):
 
     """
-    Rests can be encoded by a frequency of 0.
+    Tone that represents a raw frequency.
     """
 
     def __init__(self, frequency, duration=1):
@@ -94,6 +115,9 @@ class Frequency(Tone):
 
     def __repr(self):
         return 'Frequency({}, {})'.format(self.frequency, self.duration)
+
+    def transpose(self, pitch_factor):
+        return Frequency(self.frequency * pitch_factor, self.duration)
 
     def frequency(self, base_frequency=1):
         return base_frequency * self.frequency
@@ -126,6 +150,9 @@ class Vector(Tone):
         return 'Vector({}, {})'.format(', '.join(str(p) for p in self.powers),
                                        self.duration)
 
+    def transpose(self, pitch_factor):
+        return NotImplemented
+
     def __str__(self):
         x, y, z = self
         numerator = 2 ** max(0, x) * 3 ** max(0, y) * 5 ** max(0, z)
@@ -157,7 +184,7 @@ class Vector(Tone):
         return abs(2 * x) + abs(3 * y) + abs(5 * z)
 
 
-class Piece(dict):
+class Piece(dict, Music):
 
     """Mapping from offsets to lists of tones"""
 
@@ -168,6 +195,15 @@ class Piece(dict):
             for tone in tones:
                 new_tones.append(tone.stretch(duration_factor))
             result[offset * duration_factor] = new_tones
+        return result
+
+    def transpose(self, pitch_factor):
+        result = Piece()
+        for offset, tones in self.items():
+            new_tones = []
+            for tone in tones:
+                new_tones.append(tone.transpose(pitch_factor))
+            result[offset] = new_tones
         return result
 
     @property
@@ -182,9 +218,9 @@ class Piece(dict):
         if not isinstance(other, Piece):
             raise ValueError
 
-        result = copy(self)
+        result = deepcopy(self)
         for offset, tones in other.items():
             result[self.duration + offset] = []
             for tone in tones:
-                result[self.duration + offset].append(copy(tone))
+                result[self.duration + offset].append(deepcopy(tone))
         return result
