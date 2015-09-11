@@ -74,54 +74,59 @@ def to_composition(arith_expr):
     if type(arith_expr) == PitchLiteral:
         try:
             # TODO: try vector first
-            freq = float(arith_expr)
+            freq = float(arith_expr.token)
             return Frequency(freq)
         except ValueError:
             if arith_expr == '_':
                 return Rest()
             else:
-                return Symbol(arith_expr)
+                return Symbol(arith_expr.token)
 
-    if type(arith_expr) == Duration:
-        duration_factor = arith_expr.right
+    elif type(arith_expr) == Duration:
+        try:
+            duration_factor = float(arith_expr.right.token)
+        except ValueError:
+            raise ValueError('Duration factor {} is not a float.'.format(
+                arith_expr.right.token
+            ))
         subject = to_composition(arith_expr.left)
         return subject.stretch(duration_factor)
 
-    if type(arith_expr) == Serial:
-        left_piece = to_composition(arith_expr.left)
-        right_piece = to_composition(arith_expr.right)
-        return left_piece.concat(right_piece)
+    elif type(arith_expr) == Serial:
+        left_part = to_composition(arith_expr.left)
+        right_part = to_composition(arith_expr.right)
+        return left_part.concat(right_part)
 
-    if type(arith_expr) == Parallel:
-        left_piece = to_composition(arith_expr.left)
-        right_piece = to_composition(arith_expr.right)
-        result = deepcopy(left_piece)
-        for offset, tone in right_piece.items():
-            result[offset].append(deepcopy(tone))
-        return result
+    elif type(arith_expr) == Parallel:
+        # Concatenate with empty piece to ensure left and right parts are pieces
+        left_part = to_composition(arith_expr.left).concat(Piece())
+        right_part = to_composition(arith_expr.right).concat(Piece())
+        result = left_part.concat(Piece())
+        if isinstance(right_part, Piece):
+            for offset, tones in right_part.items():
+                result[offset] = deepcopy(tones)
+            return result
+        else:
+            raise ValueError
 
-    if type(arith_expr) == Multiplication:
-        left = to_composition(arith_expr.left)
-        right = to_composition(arith_expr.right)
+    elif type(arith_expr) == Multiplication:
+        multiplier = to_composition(arith_expr.left)
+        subject = to_composition(arith_expr.right)
 
-        if not isinstance(left, Tone):
+        if not isinstance(multiplier, Tone):
             raise NotImplementedError('Left-multiplication by non-tones has no meaning')
 
-        if isinstance(right, Tone):
-            ...
+        result = subject.transpose(multiplier.frequency())
+        return result.stretch(multiplier.duration)
 
-        if isinstance(right, Piece):
-            ...
-
-    if type(arith_expr) == Division:
+    elif type(arith_expr) == Division:
         subject = to_composition(arith_expr.left)
         divisor = to_composition(arith_expr.right)
 
         if isinstance(divisor, Tone):
-            result = subject.transpose(1 / divisor.frequency)
-            result = result.stretch(1 / divisor.duration)
-            return result
+            result = subject.transpose(1 / divisor.frequency())
+            return result.stretch(1 / divisor.duration)
 
         raise NotImplementedError('Division by non-tones has no meaning')
 
-
+    raise ValueError('{} is not a valid arithmetic expression'.format(arith_expr))

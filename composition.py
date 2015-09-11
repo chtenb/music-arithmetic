@@ -7,6 +7,7 @@ frequencies, symbols and vectors.
 from copy import deepcopy
 import math
 from abc import abstractmethod
+from music21 import pitch
 
 Infinity = float('inf')
 
@@ -42,7 +43,7 @@ class Tone(Music):
 
     def concat(self, other):
         result = Piece()
-        result[0] = self
+        result[0] = [self]
         return result.concat(other)
 
     @abstractmethod
@@ -94,10 +95,11 @@ class Symbol(Tone):
         return 'Symbol({}, {})'.format(self.symbol, self.duration)
 
     def transpose(self, pitch_factor):
-        return NotImplemented
+        # TODO: try to keep Symbol representation
+        return Frequency(self.frequency() * pitch_factor, self.duration)
 
     def frequency(self, base_frequency=1):
-        return NotImplemented
+        return base_frequency * pitch.Pitch(self.symbol).frequency
 
     def harmonic_distance(self, other):
         return Infinity
@@ -117,10 +119,10 @@ class Frequency(Tone):
         return 'Frequency({}, {})'.format(self.frequency, self.duration)
 
     def transpose(self, pitch_factor):
-        return Frequency(self.frequency * pitch_factor, self.duration)
+        return Frequency(self.frequency() * pitch_factor, self.duration)
 
     def frequency(self, base_frequency=1):
-        return base_frequency * self.frequency
+        return base_frequency * self._frequency
 
     def add(self, other):
         return Frequency(self.frequency() * other.frequency())
@@ -136,7 +138,7 @@ class Vector(Tone):
 
     """
     A vector is a 3-tuple (x,y,z) of integers, representing a pitch via the formula
-    2^x*3^y*5^z.
+    2^x * 3^y * 5^z.
     """
 
     def __init__(self, x=0, y=0, z=0, duration=1):
@@ -151,7 +153,7 @@ class Vector(Tone):
                                        self.duration)
 
     def transpose(self, pitch_factor):
-        return NotImplemented
+        raise NotImplementedError
 
     def __str__(self):
         x, y, z = self
@@ -178,7 +180,7 @@ class Vector(Tone):
     def harmonic_distance(self, other):
         """Return the harmonic distance."""
         if not isinstance(other, Vector):
-            return NotImplemented
+            raise NotImplementedError
         difference = self.substract(other)
         x, y, z = difference
         return abs(2 * x) + abs(3 * y) + abs(5 * z)
@@ -213,8 +215,8 @@ class Piece(dict, Music):
 
     def concat(self, other):
         """Return a piece where other is concatenated after self"""
-        if type(other) == Tone:
-            other = Piece({0: other})
+        if isinstance(other, Tone):
+            other = Piece({0: [other]})
         if not isinstance(other, Piece):
             raise ValueError
 

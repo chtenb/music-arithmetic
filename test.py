@@ -1,5 +1,6 @@
 from arithmeticparser import parse_file
-from to_music21 import construct_music21
+from arithmetic import to_composition
+from to_music21 import piece_to_music21
 
 from music21 import pitch, note, chord, stream
 from math import log
@@ -9,15 +10,17 @@ C4 = 261.625565300598634
 
 
 def export_example():
-    test = parse_file('example.ma')
-    print(test)
-    m21_result = construct_music21(test)
+    arith_expr = parse_file('example.ma')
+    print(arith_expr)
+    piece = to_composition(arith_expr)
+    print(piece)
+    m21_result = piece_to_music21(piece)
     m21_result = m21_result.chordify()
     m21_result = m21_result.makeNotation()
     m21_result.write('midi', 'output/foo.mid')
     try:
         m21_result.write('lily.pdf', 'output/foo')
-    except:
+    except Exception:
         print('Lilypond is probably not installed, so result can not be exported to pdf')
 
 
