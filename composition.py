@@ -152,8 +152,32 @@ class Vector(Tone):
         return 'Vector({}, {})'.format(', '.join(str(p) for p in self.powers),
                                        self.duration)
 
+    @staticmethod
+    def from_frequency(number):
+        """
+        Try factorize given integer in terms of 2,3 and 5.
+        If number is not integer or no factorization exists, raise ValueError.
+        """
+        # TODO: also allow quotients
+        if not isinstance(number, int):
+            raise ValueError
+
+        powers = [0, 0, 0]
+        for i, prime in enumerate([2, 3, 5]):
+            while number % prime == 0:
+                number //= prime
+                powers[i] += 1
+        if number != 1:
+            raise ValueError
+
+        return Vector(*powers)
+
     def transpose(self, pitch_factor):
-        raise NotImplementedError
+        try:
+            transpose_vector = Vector.from_frequency(pitch_factor)
+            return self.add(transpose_vector)
+        except ValueError:
+            return Frequency(self.frequency() * pitch_factor)
 
     def __str__(self):
         x, y, z = self
@@ -170,12 +194,12 @@ class Vector(Tone):
         return base_frequency * 2 ** x * 3 ** y * 5 ** z
 
     def add(self, other):
-        """Add two tones together."""
-        return Vector(*(x + y for x, y in zip(self, other)))
+        """Add given tone to self. Duration is kept."""
+        return Vector(*(x + y for x, y in zip(self, other)), duration=self.duration)
 
     def substract(self, other):
-        """Substract two tones."""
-        return Vector(*(x - y for x, y in zip(self, other)))
+        """Substract given tone from self. Duration is kept."""
+        return Vector(*(x - y for x, y in zip(self, other)), duration=self.duration)
 
     def harmonic_distance(self, other):
         """Return the harmonic distance."""

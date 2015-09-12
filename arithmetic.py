@@ -73,14 +73,17 @@ class Parallel(BinaryOperation):
 def to_composition(arith_expr):
     if type(arith_expr) == PitchLiteral:
         try:
-            # TODO: try vector first
-            freq = float(arith_expr.token)
-            return Frequency(freq)
+            freq = int(arith_expr.token)
+            return Vector.from_frequency(freq)
         except ValueError:
-            if arith_expr == '_':
-                return Rest()
-            else:
-                return Symbol(arith_expr.token)
+            try:
+                freq = float(arith_expr.token)
+                return Frequency(freq)
+            except ValueError:
+                if arith_expr == '_':
+                    return Rest()
+                else:
+                    return Symbol(arith_expr.token)
 
     elif type(arith_expr) == Duration:
         try:
