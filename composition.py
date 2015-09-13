@@ -6,6 +6,7 @@ frequencies, symbols and vectors.
 """
 from copy import deepcopy
 import math
+import fractions
 from abc import abstractmethod
 from music21 import pitch
 
@@ -158,15 +159,13 @@ class Vector(Tone):
         Try factorize given integer in terms of 2,3 and 5.
         If number is not integer or no factorization exists, raise ValueError.
         """
-        # TODO: also allow quotients
-        if not isinstance(number, int):
-            raise ValueError
-
+        frac = fractions.Fraction(number)
         powers = [0, 0, 0]
-        for i, prime in enumerate([2, 3, 5]):
-            while number % prime == 0:
-                number //= prime
-                powers[i] += 1
+        for number, sign in [(frac.numerator, 1), (frac.denominator, -1)]:
+            for i, prime in enumerate([2, 3, 5]):
+                while number % prime == 0:
+                    number //= prime
+                    powers[i] += sign
         if number != 1:
             raise ValueError
 
@@ -204,7 +203,10 @@ class Vector(Tone):
     def harmonic_distance(self, other):
         """Return the harmonic distance."""
         if not isinstance(other, Vector):
-            raise NotImplementedError
+            try:
+                other = Vector.from_frequency(other)
+            except ValueError:
+                raise NotImplementedError
         difference = self.substract(other)
         x, y, z = difference
         return abs(2 * x) + abs(3 * y) + abs(5 * z)
