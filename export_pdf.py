@@ -7,19 +7,13 @@ parser.add_argument('beautify', help='If specified, convert result to proper not
                     action='store_true')
 args = parser.parse_args()
 
-from maparser import parse_file
-from to_music21 import construct_music21
+from arithmeticparser import parse_file
+from arithmetic import to_composition
+from export import export_pdf
 
 print('Exporting {}'.format(args.inputfile))
 
-test = parse_file(args.inputfile)
-m21_result = construct_music21(test)
+arith_expr = parse_file(args.inputfile)
+piece = to_composition(arith_expr)
+export_pdf(piece, args.outputfile, args.beautify)
 
-if args.beautify:
-    m21_result = m21_result.chordify()
-    m21_result = m21_result.makeNotation()
-
-if not args.outputfile:
-    m21_result.write('lily.pdf')
-else:
-    m21_result.write('lily.pdf', args.outputfile)
