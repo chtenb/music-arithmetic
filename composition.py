@@ -211,10 +211,20 @@ class Vector(Tone):
         x, y, z = difference
         return abs(2 * x) + abs(3 * y) + abs(5 * z)
 
-
+# TODO: check whether input are really lists of tones
+# TODO: make slicing use constant time
 class Piece(dict, Music):
 
     """Mapping from offsets to lists of tones"""
+
+    def __getitem__(self, index, item):
+        if type(index) == slice:
+            ...
+        else:
+            ...
+
+    def __setitem__(self, item):
+        ...
 
     def stretch(self, duration_factor):
         result = Piece()

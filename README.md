@@ -27,6 +27,10 @@ The same piece but in pure notation is like this.
 One can store this into a file, like `example.ma` and export it to midi it using the command
 `python3 export_midi.py example.ma example.mid`.
 
+## To be implemented
+- Convert music21 format to out own format
+- Convert frequencies to vectors
+
 ## Language description
 
 Numbers can be constructed by the usual expressions.
